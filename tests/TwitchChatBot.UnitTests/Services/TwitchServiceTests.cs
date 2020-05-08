@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Interfaces;
 using TwitchChatBot.Shared.Services;
@@ -18,7 +17,7 @@ namespace TwitchChatBot.UnitTests.Services
         public TwitchServiceTests()
         {
             _loggerMock = new Mock<ILogger<ITwitchService>>();
-            _configMock= new Mock<IConfiguration>();
+            _configMock = new Mock<IConfiguration>();
             sut = new TwitchService(_loggerMock.Object);
         }
 
@@ -43,7 +42,7 @@ namespace TwitchChatBot.UnitTests.Services
             var password = "random_password";
 
             // ACT
-            await sut.CreateTwitchClient(String.Empty, password);
+            await sut.CreateTwitchClient(string.Empty, password);
 
             // ASSERT
             Assert.True(sut.IsInitialized);
@@ -56,7 +55,7 @@ namespace TwitchChatBot.UnitTests.Services
             var userName = "cldubya";
 
             // ACT
-            await sut.CreateTwitchClient(userName, String.Empty);
+            await sut.CreateTwitchClient(userName, string.Empty);
 
             // ASSERT
             Assert.True(sut.IsInitialized);

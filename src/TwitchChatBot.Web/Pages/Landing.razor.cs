@@ -17,7 +17,7 @@ namespace TwitchChatBot.Web.Pages
         [Inject]
         protected ITwitchService TwitchService { get; set; }
 
-        private List<string> _channels;
+        private readonly List<string> _channels;
 
 
         protected async Task StartBot()

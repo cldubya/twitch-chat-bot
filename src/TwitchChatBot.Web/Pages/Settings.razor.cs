@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Models;
@@ -26,7 +24,7 @@ namespace TwitchChatBot.Web.Pages
             _model.BotUsername = Configuration[Constants.CONFIG_TWITCH_BOTUSERNAME];
             _model.BotPassword = Configuration[Constants.CONFIG_TWITCH_BOTPASSWORD];
             _model.Channels = Configuration.GetSection(Constants.CONFIG_TWITCH_CHANNELS).GetChildren().ToList().Select(x => x.Value).ToList();
-;
+            ;
 
             return Task.CompletedTask;
         }

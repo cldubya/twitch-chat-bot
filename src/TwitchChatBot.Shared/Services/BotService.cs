@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using TwitchChatBot.Shared.Enums;
 using TwitchChatBot.Shared.Interfaces;
 using TwitchChatBot.Shared.Models;
-using System.Linq;
 
 namespace TwitchChatBot.Shared.Services
 {
@@ -66,7 +65,7 @@ namespace TwitchChatBot.Shared.Services
         private Task LoadChannels()
         {
             var channelSettings = _configuration.GetSection(Constants.CONFIG_TWITCH_CHANNELS);
-            
+
 
             if (Channels == null)
             {

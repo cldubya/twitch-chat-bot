@@ -1,9 +1,9 @@
 ﻿using Azure.Storage.Queues;
 using Microsoft.Azure.Cosmos.Table;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Models;
-using System.Text.Json;
 
 namespace TwitchChatBot.CLI
 {
@@ -46,7 +46,7 @@ namespace TwitchChatBot.CLI
 
         public static async Task AddMessageToQueue(QueueClient queue, ChannelActivityEntity entity)
         {
-            var json = JsonSerializer.Serialize(entity, typeof(ChannelActivityEntity), options: new JsonSerializerOptions {  });
+            var json = JsonSerializer.Serialize(entity, typeof(ChannelActivityEntity), options: new JsonSerializerOptions { });
             await queue.SendMessageAsync(Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json)));
         }
 

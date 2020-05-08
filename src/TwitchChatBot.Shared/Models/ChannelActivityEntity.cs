@@ -1,9 +1,4 @@
 ﻿using Microsoft.Azure.Cosmos.Table;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using TwitchChatBot.Shared.Enums;
-using TwitchLib.Api.V5.Models.Channels;
 
 namespace TwitchChatBot.Shared.Models
 {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Enums;
 using TwitchChatBot.Shared.Interfaces;
@@ -12,18 +11,18 @@ namespace TwitchChatBot.UnitTests.Services
 {
     public class BotServiceTests
     {
-        private Mock<IConfiguration> _configMock;
-        private Mock<ILogger<IBotService>> _loggerMock;
-        private Mock<IStorageService> _storageServiceMock;
-        private Mock<ITwitchService> _twitchServiceMock;
-        private IBotService sut;
+        private readonly Mock<IConfiguration> _configMock;
+        private readonly Mock<ILogger<IBotService>> _loggerMock;
+        private readonly Mock<IStorageService> _storageServiceMock;
+        private readonly Mock<ITwitchService> _twitchServiceMock;
+        private readonly IBotService sut;
 
         public BotServiceTests()
         {
             _twitchServiceMock = new Mock<ITwitchService>();
             _loggerMock = new Mock<ILogger<IBotService>>();
             _storageServiceMock = new Mock<IStorageService>();
-            sut = new BotService(_twitchServiceMock.Object,_configMock.Object,_loggerMock.Object, _storageServiceMock.Object);
+            sut = new BotService(_twitchServiceMock.Object, _configMock.Object, _loggerMock.Object, _storageServiceMock.Object);
         }
 
         [Fact]
@@ -76,7 +75,7 @@ namespace TwitchChatBot.UnitTests.Services
             // arrange
             string password = "password";
             _twitchServiceMock.SetupGet(x => x.IsInitialized).Returns(false);
-            _twitchServiceMock.Setup(x => x.CreateTwitchClient(String.Empty, password)).Returns(Task.CompletedTask);
+            _twitchServiceMock.Setup(x => x.CreateTwitchClient(string.Empty, password)).Returns(Task.CompletedTask);
 
             // act
             var result = sut.StartBot();
@@ -92,7 +91,7 @@ namespace TwitchChatBot.UnitTests.Services
             // arrange
             string username = "Test";
             _twitchServiceMock.SetupGet(x => x.IsInitialized).Returns(false);
-            _twitchServiceMock.Setup(x => x.CreateTwitchClient(username, String.Empty)).Returns(Task.CompletedTask);
+            _twitchServiceMock.Setup(x => x.CreateTwitchClient(username, string.Empty)).Returns(Task.CompletedTask);
 
             // act
             var result = sut.StartBot();

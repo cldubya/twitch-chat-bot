@@ -12,11 +12,11 @@ namespace TwitchChatBot.Shared.Services
     public class AzureTableStorageService : IStorageService
     {
         private CloudTableClient _tableClient;
-        private string _connectionString;
-        private IConfiguration _configuration;
-        private ILogger<IStorageService> _logger;
+        private readonly string _connectionString;
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<IStorageService> _logger;
 
-        public AzureTableStorageService(ILogger<IStorageService> logger,IConfiguration configuration, string connectionString = "")
+        public AzureTableStorageService(ILogger<IStorageService> logger, IConfiguration configuration, string connectionString = "")
         {
             if (!string.IsNullOrEmpty(connectionString))
             {
@@ -42,7 +42,7 @@ namespace TwitchChatBot.Shared.Services
             {
                 await table.CreateIfNotExistsAsync();
             }
-            _logger.LogInformation("Loaded bot settings");        
+            _logger.LogInformation("Loaded bot settings");
         }
 
         public Task SaveBotSettings()

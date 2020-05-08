@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 using TwitchChatBot.Shared.Models;
 using TwitchLib.Api;
 using TwitchLib.Api.Services;
@@ -13,13 +12,11 @@ namespace TwitchChatBot.CLI
 {
     public class StreamMonitorService : IDisposable
     {
-        private readonly IConfiguration _config;
         private readonly LiveStreamMonitorService _liveStreamMonitorService;
-        private Bot _bot;
+        private readonly Bot _bot;
 
         public StreamMonitorService(IConfiguration config, Bot bot)
         {
-            _config = config;
             var twitchApi = new TwitchAPI();
             twitchApi.Settings.ClientId = config[Constants.CONFIG_TWITCH_CLIENTID];
             twitchApi.Settings.AccessToken = config[Constants.CONFIG_TWITCH_ACCESSTOKEN];
@@ -47,27 +44,27 @@ namespace TwitchChatBot.CLI
             await Task.CompletedTask;
         }
 
-        private async Task LiveStreamMonitorServiceOnOnServiceStarted(object? sender, OnServiceStartedArgs e)
+        private async Task LiveStreamMonitorServiceOnOnServiceStarted(object sender, OnServiceStartedArgs e)
         {
-            Console.WriteLine($"{DateTime.UtcNow.ToString()}: Live Stream Service Monitor Started");
+            Console.WriteLine($"{DateTime.UtcNow}: Live Stream Service Monitor Started");
             await Task.CompletedTask;
         }
 
-        private async Task LiveStreamMonitorServiceOnOnServiceStopped(object? sender, OnServiceStoppedArgs e)
+        private async Task LiveStreamMonitorServiceOnOnServiceStopped(object sender, OnServiceStoppedArgs e)
         {
-            Console.WriteLine($"{DateTime.UtcNow.ToString()}: Live Stream Service Monitor Stopped");
+            Console.WriteLine($"{DateTime.UtcNow}: Live Stream Service Monitor Stopped");
             await Task.CompletedTask;
         }
 
-        private async Task LiveStreamMonitorServiceOnOnStreamOnline(object? sender, OnStreamOnlineArgs e)
+        private async Task LiveStreamMonitorServiceOnOnStreamOnline(object sender, OnStreamOnlineArgs e)
         {
-            Console.WriteLine($"{DateTime.UtcNow.ToString()}: Stream Online: {e.Channel}");
+            Console.WriteLine($"{DateTime.UtcNow}: Stream Online: {e.Channel}");
             await _bot.Start(e.Channel);
         }
 
-        private async Task LiveStreamMonitorServiceOnOnStreamOffline(object? sender, OnStreamOfflineArgs e)
+        private async Task LiveStreamMonitorServiceOnOnStreamOffline(object sender, OnStreamOfflineArgs e)
         {
-            Console.WriteLine($"{DateTime.UtcNow.ToString()}: Stream Offline: {e.Channel}");
+            Console.WriteLine($"{DateTime.UtcNow}: Stream Offline: {e.Channel}");
             await _bot.Stop(e.Channel);
         }
 

@@ -4,9 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
-using TwitchChatBot.Shared.Enums;
 using TwitchChatBot.Shared.Models;
 
 namespace TwitchChatBot.Fx
@@ -24,7 +22,7 @@ namespace TwitchChatBot.Fx
 
         [FunctionName("ProcessQueueEntry")]
         public async Task ProcessQueueEntry(
-            [QueueTrigger(Constants.QUEUE_NAME, Connection = Constants.QUEUE_STORAGE_CONNECTION)] ChannelActivityEntity myQueueItem,ILogger logger, ExecutionContext context)
+            [QueueTrigger(Constants.QUEUE_NAME, Connection = Constants.QUEUE_STORAGE_CONNECTION)] ChannelActivityEntity myQueueItem, ILogger logger)
         {
             logger.LogInformation($"{DateTime.UtcNow}: Starting the function");
             var formData = new Dictionary<string, string>

@@ -1,10 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
 using TwitchChatBot.Shared.Interfaces;
 using TwitchChatBot.Shared.Services;
 using Xunit;
@@ -13,9 +9,9 @@ namespace TwitchChatBot.UnitTests.Services
 {
     public class StorageServiceTests
     {
-        private Mock<ILogger<IStorageService>> _loggerMock;
-        private Mock<IConfiguration> _configMock;
-        private IStorageService sut;
+        private readonly Mock<ILogger<IStorageService>> _loggerMock;
+        private readonly Mock<IConfiguration> _configMock;
+        private readonly IStorageService sut;
 
         public StorageServiceTests()
         {

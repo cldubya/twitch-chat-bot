@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Azure.Storage.Queues;
+using Microsoft.Azure.Cosmos.Table;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Azure.Storage.Queues;
-using Microsoft.Azure.Cosmos.Table;
-using Microsoft.Extensions.Configuration;
 using TwitchChatBot.Shared.Enums;
 using TwitchChatBot.Shared.Models;
 using TwitchLib.Client;
@@ -16,11 +16,11 @@ using TwitchLib.Communication.Models;
 
 namespace TwitchChatBot.CLI
 {
-    
+
     public class Bot : IDisposable
     {
         private TwitchClient _client;
-        private CloudTable _tableClient;
+        //private readonly CloudTable _tableClient;
         private QueueClient _queueClient;
         private readonly IConfiguration _config;
 
@@ -37,8 +37,8 @@ namespace TwitchChatBot.CLI
 
         private async Task SetupStorage()
         {
-           /* Common.CreateTableStorageAccount(_config.GetConnectionString("Storage"));
-            _tableClient = await Common.CreateTableAsync();*/
+            /* Common.CreateTableStorageAccount(_config.GetConnectionString("Storage"));
+             _tableClient = await Common.CreateTableAsync();*/
 
             _queueClient = await Common.CreateQueue(Constants.QUEUE_NAME);
         }
@@ -61,10 +61,10 @@ namespace TwitchChatBot.CLI
             _client.OnLog += Client_OnLog;
             _client.OnJoinedChannel += Client_OnJoinedChannel;
             _client.OnConnected += Client_OnConnected;
-            _client.OnMessageReceived += async(s,e) => await Client_OnMessageReceived(s,e);
-            _client.OnNewSubscriber += async (s,e) => await Client_OnNewSubscriber(s,e);
-            _client.OnUserJoined += async (s,e) => await Client_OnUserJoined(s,e);
-            _client.OnUserLeft += async(s,e) => await Client_OnUserLeft(s,e);
+            _client.OnMessageReceived += async (s, e) => await Client_OnMessageReceived(s, e);
+            _client.OnNewSubscriber += async (s, e) => await Client_OnNewSubscriber(s, e);
+            _client.OnUserJoined += async (s, e) => await Client_OnUserJoined(s, e);
+            _client.OnUserLeft += async (s, e) => await Client_OnUserLeft(s, e);
 
             _client.Connect();
 
@@ -73,13 +73,21 @@ namespace TwitchChatBot.CLI
 
         public async Task Start(string channel)
         {
-            Console.WriteLine( $"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Joining the channel {channel}");
+            Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Joining the channel {channel}");
             if (!_client.JoinedChannels.Any(x =>
                 string.Equals(channel, x.Channel, StringComparison.InvariantCultureIgnoreCase) && _client.IsConnected))
             {
                 _client.JoinChannel(channel);
             }
-            Console.WriteLine( $"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Joined the channel {channel}");
+            var entity = new ChannelActivityEntity
+            {
+                PartitionKey = channel,
+                RowKey = DateTime.UtcNow.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                Activity = StreamActivity.StreamStarted.ToString(),
+                Viewer = ""
+            };
+            await AddEntityToStorage(entity);
+            Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Joined the channel {channel}");
 
             await Task.CompletedTask;
         }
@@ -94,7 +102,14 @@ namespace TwitchChatBot.CLI
                 _client.LeaveChannel(channel);
                 Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Left the channel {channel}");
             }
-
+            var entity = new ChannelActivityEntity
+            {
+                PartitionKey = channel,
+                RowKey = DateTime.UtcNow.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                Activity = StreamActivity.StreamStopped.ToString(),
+                Viewer = ""
+            };
+            await AddEntityToStorage(entity);
             Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Stopped the channel {channel}");
 
             await Task.CompletedTask;
@@ -102,13 +117,12 @@ namespace TwitchChatBot.CLI
 
         private async Task Client_OnUserJoined(object sender, OnUserJoinedArgs e)
         {
-            var timeStamp = DateTime.UtcNow;
-            Console.WriteLine($"{timeStamp.ToString(CultureInfo.InvariantCulture)}: {e.Username} joined the channel ({e.Channel})");
+            Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: {e.Username} joined the channel ({e.Channel})");
 
             var entity = new ChannelActivityEntity
             {
                 PartitionKey = e.Channel,
-                RowKey = timeStamp.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                RowKey = DateTime.UtcNow.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
                 Activity = StreamActivity.UserJoined.ToString(),
                 Viewer = e.Username
             };
@@ -126,17 +140,15 @@ namespace TwitchChatBot.CLI
             await Common.AddMessageToQueue(_queueClient, entity);
             //await Common.InsertOrMergeEntityAsync(_tableClient, entity);
         }
-        
+
         private async Task Client_OnUserLeft(object sender, OnUserLeftArgs e)
         {
-            var timeStamp = DateTime.UtcNow;
-
             Console.WriteLine(
-                $"{timeStamp.ToString(CultureInfo.InvariantCulture)}: {e.Username} left the channel {e.Channel}");
+                $"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: {e.Username} left the channel {e.Channel}");
             var entity = new ChannelActivityEntity
             {
                 PartitionKey = e.Channel,
-                RowKey = timeStamp.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                RowKey = DateTime.UtcNow.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
                 Activity = StreamActivity.UserLeft.ToString(),
                 Viewer = e.Username
             };
@@ -146,13 +158,11 @@ namespace TwitchChatBot.CLI
 
         private async Task Client_OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            var timeStamp = DateTime.UtcNow;
-
-            Console.WriteLine($"{timeStamp.ToString(CultureInfo.InvariantCulture)}: Message Posted");
+            Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Message Posted");
             var entity = new ChannelActivityEntity
             {
                 PartitionKey = e.ChatMessage.Channel,
-                RowKey = timeStamp.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                RowKey = DateTime.UtcNow.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
                 Activity = StreamActivity.MessagePosted.ToString(),
                 Viewer = e.ChatMessage.Username
             };
@@ -160,13 +170,11 @@ namespace TwitchChatBot.CLI
         }
         private async Task Client_OnNewSubscriber(object sender, OnNewSubscriberArgs e)
         {
-            var timeStamp = DateTime.UtcNow;
-
-            Console.WriteLine($"{timeStamp.ToString(CultureInfo.InvariantCulture)}: New Subscriber Posted");
+            Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: New Subscriber Posted");
             var entity = new ChannelActivityEntity
             {
                 PartitionKey = e.Channel,
-                RowKey = timeStamp.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                RowKey = DateTime.UtcNow.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
                 Activity = StreamActivity.UserSubscribed.ToString(),
                 Viewer = e.Subscriber.Id
             };
@@ -178,7 +186,7 @@ namespace TwitchChatBot.CLI
             if (!_client.JoinedChannels.Any()) return;
             var tasks = new List<Task>(_client.JoinedChannels.Count);
             tasks.AddRange(_client.JoinedChannels.Select(channel => Stop(channel.Channel)));
-            
+
             Task.WaitAll(tasks.ToArray());
             _client.Disconnect();
         }

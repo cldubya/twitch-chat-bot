@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using TwitchChatBot.Shared.Interfaces;
 using TwitchChatBot.Shared.Enums;
+using TwitchChatBot.Shared.Interfaces;
 
 namespace TwitchChatBot.Web.Shared
 {
