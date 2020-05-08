@@ -1,0 +1,10 @@
+﻿<div>
+    <label for="enabledCheckbox">Enabled: </label>
+    <input id="enabledCheckbox" type="checkbox" @bind="@IsEnabled" />
+</div>
+<div>
+    <button id="startBotBtn" class="btn btn-primary" @onclick="StartBot">Start</button>
+</div>
+<div>
+    <button id="stopBotBtn" class="btn btn-primary" @onclick="StopBot">Stop</button>
+</div>

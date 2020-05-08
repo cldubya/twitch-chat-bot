@@ -1,0 +1,65 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29827.131
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{59192ADB-44DD-40F6-A29B-74D5FD335136}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{DD826EB5-478A-49A2-9C7F-C3FB2A4C20D3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchChatBot.Web", "src\TwitchChatBot.Web\TwitchChatBot.Web.csproj", "{BD6E1383-7C1B-4969-AF10-C078BF3EB824}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchChatBot.UnitTests", "tests\TwitchChatBot.UnitTests\TwitchChatBot.UnitTests.csproj", "{9625DDCC-C717-4F55-8966-516DA6704505}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7FE246A5-DB09-4E15-9C57-BD19BADF20B9}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchChatBot.Shared", "src\TwitchChatBot.Shared\TwitchChatBot.Shared.csproj", "{BF1A306E-2102-41E7-85E2-1308C3E05D17}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TwitchChatBot.Fx", "src\TwitchChatBot.Fx\TwitchChatBot.Fx.csproj", "{0C315769-DA0A-4B05-9F9A-4FF9E9B56E05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwitchChatBot.CLI", "src\TwitchChatBot.CLI\TwitchChatBot.CLI.csproj", "{AA53668C-EC3E-47F3-AEED-BAECEF39432B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD6E1383-7C1B-4969-AF10-C078BF3EB824}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD6E1383-7C1B-4969-AF10-C078BF3EB824}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD6E1383-7C1B-4969-AF10-C078BF3EB824}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD6E1383-7C1B-4969-AF10-C078BF3EB824}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9625DDCC-C717-4F55-8966-516DA6704505}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9625DDCC-C717-4F55-8966-516DA6704505}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9625DDCC-C717-4F55-8966-516DA6704505}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9625DDCC-C717-4F55-8966-516DA6704505}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF1A306E-2102-41E7-85E2-1308C3E05D17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF1A306E-2102-41E7-85E2-1308C3E05D17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF1A306E-2102-41E7-85E2-1308C3E05D17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF1A306E-2102-41E7-85E2-1308C3E05D17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C315769-DA0A-4B05-9F9A-4FF9E9B56E05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C315769-DA0A-4B05-9F9A-4FF9E9B56E05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C315769-DA0A-4B05-9F9A-4FF9E9B56E05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C315769-DA0A-4B05-9F9A-4FF9E9B56E05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA53668C-EC3E-47F3-AEED-BAECEF39432B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA53668C-EC3E-47F3-AEED-BAECEF39432B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA53668C-EC3E-47F3-AEED-BAECEF39432B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA53668C-EC3E-47F3-AEED-BAECEF39432B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BD6E1383-7C1B-4969-AF10-C078BF3EB824} = {59192ADB-44DD-40F6-A29B-74D5FD335136}
+		{9625DDCC-C717-4F55-8966-516DA6704505} = {DD826EB5-478A-49A2-9C7F-C3FB2A4C20D3}
+		{BF1A306E-2102-41E7-85E2-1308C3E05D17} = {59192ADB-44DD-40F6-A29B-74D5FD335136}
+		{0C315769-DA0A-4B05-9F9A-4FF9E9B56E05} = {59192ADB-44DD-40F6-A29B-74D5FD335136}
+		{AA53668C-EC3E-47F3-AEED-BAECEF39432B} = {59192ADB-44DD-40F6-A29B-74D5FD335136}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {80186ED3-3A9E-4586-8CF8-E7C445F2B4D3}
+	EndGlobalSection
+EndGlobal

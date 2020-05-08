@@ -1,0 +1,33 @@
+﻿@page "/settings"
+<h3>Settings</h3>
+
+<EditForm Model="_model" OnValidSubmit="SaveSettings">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <p>
+        <label>
+            Bot Username: <InputText @bind-Value="_model.BotUsername" />
+        </label>
+    </p>
+    <p>
+        <label>
+            Bot Password: <InputText @bind-Value="_model.BotPassword" />
+        </label>
+    </p>
+    <p>
+        <label>
+            Channels:
+        </label>
+        <ul class="list-group">
+            @foreach (var channel in _model.Channels)
+            {
+                <li class="list-group-item">
+                    @channel
+                </li>
+            }
+        </ul>
+    </p>
+
+    <button class="btn btn-primary">Save Settings</button>
+</EditForm>
