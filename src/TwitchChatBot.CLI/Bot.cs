@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Enums;
 using TwitchChatBot.Shared.Models;
@@ -113,6 +114,21 @@ namespace TwitchChatBot.CLI
             Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Stopped the channel {channel}");
 
             await Task.CompletedTask;
+        }
+
+        public async Task AddNewFollowers(string channel, List<string> followers)
+        {
+            foreach (var follower in followers)
+            {
+                var entity = new ChannelActivityEntity
+                {
+                    PartitionKey = channel,
+                    RowKey = DateTime.UtcNow.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                    Activity = StreamActivity.UserJoined.ToString(),
+                    Viewer = follower
+                };
+                await AddEntityToStorage(entity);
+            }
         }
 
         private async Task Client_OnUserJoined(object sender, OnUserJoinedArgs e)
