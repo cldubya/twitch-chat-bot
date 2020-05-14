@@ -1,0 +1,28 @@
+﻿@page "/subscriptions"
+
+<h3>Subscriptions</h3>
+<AuthorizeView>
+    <NotAuthorized>
+        <p>You are not supposed to see this page. Please login using the Twilio Chat Bot account credentials. Thank you</p>
+    </NotAuthorized>
+    <Authorized>
+        <div class="subscriptions">
+            <div class="subscriptions row">
+                <button class="btn btn-primary" @onclick="StartSubscription">Subscribe to Events</button>
+                <button class="btn btn-primary" @onclick="StopSubscription">Unsubscribe from Events</button>
+            </div>
+            <div class="subscriptions row">
+                <ul class="list-group">
+                    @foreach(var channel in TwitchService.Channels)
+                    {
+
+                    }
+                </ul>
+            </div>
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+}

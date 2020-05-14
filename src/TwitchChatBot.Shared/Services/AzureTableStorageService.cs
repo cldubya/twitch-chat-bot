@@ -16,14 +16,15 @@ namespace TwitchChatBot.Shared.Services
         private readonly IConfiguration _configuration;
         private readonly ILogger<IStorageService> _logger;
 
-        public AzureTableStorageService(ILogger<IStorageService> logger, IConfiguration configuration, string connectionString = "")
+        public AzureTableStorageService(ILogger<IStorageService> logger, IConfiguration configuration)
         {
-            if (!string.IsNullOrEmpty(connectionString))
-            {
-                _connectionString = connectionString;
-            }
             _configuration = configuration;
             _logger = logger;
+
+            if (string.IsNullOrEmpty(_connectionString))
+            {
+                _connectionString = _configuration.GetConnectionString(Constants.CONNECTIONSTRINGS_TABLE);
+            }
         }
 
         public async Task LoadBotSettings()
@@ -47,7 +48,27 @@ namespace TwitchChatBot.Shared.Services
 
         public Task SaveBotSettings()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
+        }
+
+        public async Task AddDataToStorage(ChannelActivityEntity entity)
+        {
+            try
+            {
+                if (_tableClient == null)
+                {
+                    CreateTableClient(_connectionString);
+                }
+
+                var insertOperation = TableOperation.InsertOrMerge(entity);
+                var table = _tableClient.GetTableReference(_configuration[Constants.CONFIG_STORAGE_TABLENAME]);
+                var result = await table.ExecuteAsync(insertOperation);
+            }
+            catch (StorageException ex)
+            {
+                _logger.LogError($"{DateTime.UtcNow}: An exception has occurred: {ex.Message}", ex);
+                throw;
+            }
         }
 
         private void CreateTableClient(string connectionString)

@@ -124,7 +124,7 @@ namespace TwitchChatBot.CLI
                 {
                     PartitionKey = channel,
                     RowKey = DateTime.UtcNow.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
-                    Activity = StreamActivity.UserJoined.ToString(),
+                    Activity = StreamActivity.UserFollowed.ToString(),
                     Viewer = follower
                 };
                 await AddEntityToStorage(entity);

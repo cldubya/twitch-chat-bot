@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using TwitchChatBot.Shared.Models;
 
 namespace TwitchChatBot.Shared.Interfaces
 {
@@ -6,5 +7,7 @@ namespace TwitchChatBot.Shared.Interfaces
     {
         Task LoadBotSettings();
         Task SaveBotSettings();
+
+        Task AddDataToStorage(ChannelActivityEntity entity);
     }
 }
