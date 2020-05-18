@@ -8,11 +8,10 @@
         public const string AZURE_BOTSETTINGS_TABLENAME = "Azure:BotSettings:TableName";
         public const string AZURE_BOTSETTINGS_PARTITIONKEY = "settings";
 
-        public const string CONFIG_FOLLOWERS_QUEUE_NAME_VALUE = "followers-data";
-        public const string CONFIG_STREAM_QUEUE_NAME_VALUE = "stream-data";
-        public const string CONFIG_TABLE_NAME_VALUE = "streaming";
-        public const string CONFIG_CONNSTRING_STORAGE_NAME = "Storage";
+        public const string DATETIME_FORMAT = "o";
 
+        public const string CONFIG_BOT_ZAPIER_SUMMARYURL = "Values:Zapier:StreamSummaryUrl";
+        public const string CONFIG_SIGNALR_URL = "Values:SignalR:Url";
         public const string CONFIG_TWITCH_ACCESSTOKEN = "Values:Twitch:AccessToken";
         public const string CONFIG_TWITCH_BOTUSERNAME = "Values:Twitch:BotUsername";
         public const string CONFIG_TWITCH_BOTPASSWORD = "Values:Twitch:BotPassword";
@@ -25,6 +24,11 @@
 
         public const string FX_HTTPCLIENT_NAME = "zapier";
         public const string FX_TWITCH_WEBHOOKS_NAME = "twitchWebhooks";
+        public const string FX_CONFIG_FOLLOWERS_QUEUE_NAME_VALUE = "followers-data";
+        public const string FX_CONFIG_STREAM_QUEUE_NAME_VALUE = "stream-data";
+        public const string FX_CONFIG_TABLE_NAME_VALUE = "streaming";
+        public const string FX_CONFIG_CONNSTRING_STORAGE_NAME = "Storage";
+        public const string FX_SIGNALR_HUB_NAME = "stream-bot";
 
         public const int TWITCH_WEBHOOKS_LEASE_MAX = 864000;
         public const string TWITCH_WEBHOOKS_SUBSCRIPTION_URL = "https://api.twitch.tv/helix/webhooks/hub";

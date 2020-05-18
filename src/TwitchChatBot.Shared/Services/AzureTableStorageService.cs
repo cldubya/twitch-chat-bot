@@ -23,7 +23,7 @@ namespace TwitchChatBot.Shared.Services
 
             if (string.IsNullOrEmpty(_connectionString))
             {
-                _connectionString = _configuration.GetConnectionString(Constants.CONFIG_CONNSTRING_STORAGE_NAME);
+                _connectionString = _configuration.GetConnectionString(Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME);
             }
         }
 
@@ -61,7 +61,7 @@ namespace TwitchChatBot.Shared.Services
                 }
 
                 var insertOperation = TableOperation.InsertOrMerge(entity);
-                var table = _tableClient.GetTableReference(Constants.CONFIG_TABLE_NAME_VALUE);
+                var table = _tableClient.GetTableReference(Constants.FX_CONFIG_TABLE_NAME_VALUE);
                 var result = await table.ExecuteAsync(insertOperation);
             }
             catch (StorageException ex)

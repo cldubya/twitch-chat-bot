@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Interfaces;
 using TwitchChatBot.Shared.Models;
-using TwitchLib.Api.V5;
 
 namespace TwitchChatBot.Web.v2.Pages
 {

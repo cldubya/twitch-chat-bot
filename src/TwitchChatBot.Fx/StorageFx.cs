@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.WebJobs;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -57,7 +58,7 @@ namespace TwitchChatBot.Fx
          }*/
 
         [FunctionName("ProcessFollowersQueueEntry")]
-        public async Task ProcessFollowersQueueMessage([QueueTrigger(Constants.CONFIG_FOLLOWERS_QUEUE_NAME_VALUE, Connection = Constants.CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
+        public async Task ProcessFollowersQueueMessage([QueueTrigger(Constants.FX_CONFIG_FOLLOWERS_QUEUE_NAME_VALUE, Connection = Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
         {
             var json = JObject.Parse(message);
             var updates = json["data"].ToObject<List<TwitchWebhookFollowersResponse>>();
@@ -67,7 +68,7 @@ namespace TwitchChatBot.Fx
                 {
                     Activity = StreamActivity.UserFollowed.ToString(),
                     PartitionKey = update.ToName,
-                    RowKey = update.FollowedAt.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                    RowKey = update.FollowedAt.ToString(Constants.DATETIME_FORMAT).Replace(":", string.Empty).Replace("-", string.Empty),
                     Viewer = update.FromName
                 };
 
@@ -76,7 +77,7 @@ namespace TwitchChatBot.Fx
         }
 
         [FunctionName("ProcessStreamQueueEntry")]
-        public async Task ProcessStreamQueueMessage([QueueTrigger(Constants.CONFIG_STREAM_QUEUE_NAME_VALUE, Connection = Constants.CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
+        public async Task ProcessStreamQueueMessage([QueueTrigger(Constants.FX_CONFIG_STREAM_QUEUE_NAME_VALUE, Connection = Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
         {
             var json = JObject.Parse(message);
             var entity = new ChannelActivityEntity();
@@ -87,7 +88,7 @@ namespace TwitchChatBot.Fx
                 {
                     entity.Activity = StreamActivity.StreamStarted.ToString();
                     entity.PartitionKey = update.UserName;
-                    entity.RowKey = update.StartedAt.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty);
+                    entity.RowKey = update.StartedAt.ToString(Constants.DATETIME_FORMAT).Replace(":", string.Empty).Replace("-", string.Empty);
                     entity.Viewer = string.Empty;
                 }
             }
@@ -95,10 +96,29 @@ namespace TwitchChatBot.Fx
             {
                 entity.Activity = StreamActivity.StreamStopped.ToString();
                 entity.PartitionKey = json["channel"].ToString();
-                entity.RowKey = DateTime.Parse(json["timestamp"].ToString()).ToString("s").Replace(":", string.Empty).Replace("-", string.Empty);
+                entity.RowKey = DateTime.Parse(json["timestamp"].ToString()).ToString(Constants.DATETIME_FORMAT).Replace(":", string.Empty).Replace("-", string.Empty);
                 entity.Viewer = string.Empty;
             }
             await _storageService.AddDataToStorage(entity);
+            await DispatchSignalRMessage(entity);
+        }
+
+        private async Task DispatchSignalRMessage(ChannelActivityEntity entity)
+        {
+            var uri = new Uri($"{_configuration[Constants.CONFIG_SIGNALR_URL]}/{Constants.FX_SIGNALR_HUB_NAME}");
+            var connection = new HubConnectionBuilder()
+                .WithUrl(uri)
+                .Build();
+
+            try
+            {
+                await connection.StartAsync();
+                await connection.InvokeAsync("StreamUpdate", entity);
+            }
+            finally
+            {
+                await connection.StopAsync();
+            }
         }
     }
 }
