@@ -7,15 +7,15 @@
     </NotAuthorized>
     <Authorized>
         <div class="subscriptions">
-            <div class="subscriptions row">
+            <div class="buttons">
                 <button class="btn btn-primary" @onclick="StartSubscription">Subscribe to Events</button>
                 <button class="btn btn-primary" @onclick="StopSubscription">Unsubscribe from Events</button>
             </div>
-            <div class="subscriptions row">
+            <div class="row">
                 <ul class="list-group">
                     @foreach(var channel in TwitchService.Channels)
                     {
-
+                        <li class="list-group-item">Channel: @channel</li>
                     }
                 </ul>
             </div>

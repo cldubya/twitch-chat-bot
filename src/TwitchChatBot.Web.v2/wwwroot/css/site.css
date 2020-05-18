@@ -182,9 +182,14 @@ app {
     }
 }
 
-.subscriptions {
+.subscriptions{
     flex-direction: column;
 }
-    .subscriptions row {
+
+    .subscriptions .buttons {
         flex-direction: row;
+    }
+
+    .subscriptions .row {
+
     }

@@ -18,7 +18,7 @@ namespace TwitchChatBot.UnitTests.Services
         {
             _loggerMock = new Mock<ILogger<ITwitchService>>();
             _configMock = new Mock<IConfiguration>();
-            sut = new TwitchService(_loggerMock.Object);
+            sut = new TwitchService(null,_loggerMock.Object);
         }
 
         [Fact]

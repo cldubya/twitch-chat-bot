@@ -1,6 +1,8 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
+using TwitchChatBot.Shared.Interfaces;
 using TwitchChatBot.Shared.Models;
+using TwitchChatBot.Shared.Services;
 
 [assembly: FunctionsStartup(typeof(TwitchChatBot.Fx.Startup))]
 namespace TwitchChatBot.Fx
@@ -22,6 +24,8 @@ namespace TwitchChatBot.Fx
                     opts.DefaultRequestHeaders.Clear();
                     opts.BaseAddress = new System.Uri("https://api.twitch.tv/");
                 });
+
+            builder.Services.AddSingleton<IStorageService, AzureTableStorageService>();
         }
     }
 }

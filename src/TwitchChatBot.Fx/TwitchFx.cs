@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Queue;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Models;
 
@@ -16,43 +18,69 @@ namespace TwitchChatBot.Fx
     {
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
+        internal readonly CloudStorageAccount _storageAccount;
+        internal CloudQueueClient _cloudQueueClient;
+        internal CloudQueue _cloudQueue;
         public TwitchFx(IConfiguration configuration, IHttpClientFactory httpClientFactory)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
+            _storageAccount = CloudStorageAccount.Parse(_configuration.GetConnectionString(Constants.CONFIG_CONNSTRING_STORAGE_NAME));
+            _cloudQueueClient = _storageAccount.CreateCloudQueueClient();
+            _cloudQueue = _cloudQueueClient.GetQueueReference(Constants.CONFIG_QUEUE_NAME_VALUE);
         }
 
-        // Twitch Docs here: https://dev.twitch.tv/docs/api/webhooks-reference#subscribe-tounsubscribe-from-events
-        [FunctionName("Subscribe_To_Timer")]
-        public async Task Run([TimerTrigger("0 */5 * * * *")] TimerInfo myTimer, ILogger log)
+        [FunctionName("ConfirmTwitchFollowersSubscription")]
+        public async Task<IActionResult> ConfirmFollowersSubscription([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "subscription/followers/{channel}")] HttpRequest request, string channel, ILogger logger)
         {
-            if (myTimer.IsPastDue)
+            logger.LogInformation($"{DateTime.UtcNow}: Confirming Follower Subscription for {channel}");
+            var result = await ConfirmChallengeRequest(request.Query, logger);
+            logger.LogInformation($"{DateTime.UtcNow}: Confirmed Follower Subscription for {channel}");
+            return result;
+        }
+
+        [FunctionName("ProcessTwitchFollowersWebhook")]
+        public async Task<IActionResult> HandleFollowersWebhookEvent([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "subscription/followers/{channel}")] HttpRequestMessage request, string channel, ILogger logger)
+        {
+            logger.LogInformation($"{DateTime.UtcNow}: Processing Twitch webhook for event on channel: {channel}");
+            var messageText = await request.Content.ReadAsStringAsync();
+            var message = new CloudQueueMessage(messageText);
+            await _cloudQueue.AddMessageAsync(message);
+            return new NoContentResult();
+        }
+
+        [FunctionName("ConfirmTwitchStreamSubscription")]
+        public async Task<IActionResult> ConfirmFollowSubscription([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "subscription/streams/{channel}")] HttpRequest request, string channel, ILogger logger)
+        {
+            logger.LogInformation($"{DateTime.UtcNow}: Confirming Stream Event Subscription for {channel}");
+            var result = await ConfirmChallengeRequest(request.Query, logger);
+            logger.LogInformation($"{DateTime.UtcNow}: Confirmed Stream Event Subscription for {channel}");
+            return result;
+        }
+
+        [FunctionName("ProcessTwitchStreamWebhook")]
+        public async Task<IActionResult> HandleStreamWebhookEvent([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "subscription/streams/{channel}")] HttpRequestMessage request, string channel, ILogger logger)
+        {
+            logger.LogInformation($"{DateTime.UtcNow}: Processing Twitch webhook for event on channel: {channel}");
+            return await Task.FromResult(new NoContentResult());
+        }
+
+
+
+        private async Task<IActionResult> ConfirmChallengeRequest(IQueryCollection keyValuePairs, ILogger logger)
+        {
+            const string CHALLENGE_KEY = "hub.challenge";
+            if (!keyValuePairs.ContainsKey(CHALLENGE_KEY))
             {
-                log.LogInformation("Timer is running late!");
+                var errorMessage = $"{DateTime.UtcNow}: The hub.challenge parameter was not sent from Twitch";
+                logger.LogError(errorMessage);
+                throw new ArgumentException(errorMessage);
             }
-            log.LogInformation($"C# Timer trigger function executed at: {DateTime.UtcNow}");
 
-            var client = _httpClientFactory.CreateClient(Constants.FX_TWITCH_WEBHOOKS_NAME);
-            var formData = new Dictionary<string, string>
-            {
-                {"hub.callback",""},
-                { "hub.mode","subscribe" },
-                {"hub.topic", "" },
-                {"hub.lease_seconds", Constants.TWITCH_WEBHOOKS_LEASE_MAX.ToString() }
-            };
-
-            var data = new FormUrlEncodedContent(formData);
-            var response = await client.PostAsJsonAsync("helix/webhooks/hub", data);
-
-        }
-
-
-        [FunctionName("FollowSubscription")]
-        public async Task HandleFollowSubscriptionUpdate([HttpTrigger(AuthorizationLevel.Anonymous,"get","post",Route = "subscription/follows/{channel}")] HttpRequest req, string channel, ILogger logger)
-        {
-           
-
-            await Task.CompletedTask;
+            StringValues challenge;
+            var flag = keyValuePairs.TryGetValue(CHALLENGE_KEY, out challenge);
+            logger.LogInformation($"{DateTime.UtcNow}: Confirming Challenge request with string {challenge}");
+            return await Task.FromResult(new ContentResult { Content = challenge, ContentType = "text/plain", StatusCode = 200 });
         }
     }
 }
