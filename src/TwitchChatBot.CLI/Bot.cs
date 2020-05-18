@@ -36,20 +36,19 @@ namespace TwitchChatBot.CLI
         {
             _config = config;
             channelMetadata = new Dictionary<string, DateTime>();
-            channelMetadata["phil_nash"] = DateTime.Parse("5/17/2020 11:05:43 PM");
         }
 
         public async Task Initialize()
         {
             await SetupStorage();
             await SetupTwitchClient();
-            //await SetupSignalRClient();
+            await SetupSignalRClient();
         }
 
         private async Task SetupStorage()
         {
-            Common.CreateTableStorageAccount(_config.GetConnectionString("Storage"));
-            _tableClient = await Common.CreateTableAsync();
+            Common.CreateTableStorageAccount(_config.GetConnectionString(Constants.CONFIG_BOT_CONNSTRINGS_STORAGE));
+            _tableClient = await Common.CreateTableAsync(Constants.CONFIG_BOT_STORAGE_TABLENAME);
         }
 
         private async Task SetupTwitchClient()
@@ -83,7 +82,7 @@ namespace TwitchChatBot.CLI
 
         private async Task SetupSignalRClient()
         {
-            var uri = new Uri($"{_config.GetConnectionString("SignalR")}/{Constants.FX_SIGNALR_HUB_NAME}");
+            var uri = new Uri($"{_config.GetConnectionString(Constants.CONFIG_BOT_CONNSTRINGS_SIGNALR)}/{_config[Constants.CONFIG_BOT_SIGNALR_HUB_NAME]}");
             hubConnection = new HubConnectionBuilder()
                 .WithUrl(uri)
                 .WithAutomaticReconnect()
@@ -108,7 +107,8 @@ namespace TwitchChatBot.CLI
 
             hubConnection.Closed += async (error) =>
             {
-                Console.WriteLine($"{DateTime.UtcNow}: Closing SIGNALR Connection");
+                Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Closing SIGNALR Connection");
+                await Task.CompletedTask;
             };
 
             await hubConnection.StartAsync();
@@ -144,7 +144,12 @@ namespace TwitchChatBot.CLI
             }
 
             Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Stopped the channel {channel}");
+
             await CalculateStreamSummaryStats(channel);
+            if (channelMetadata.ContainsKey(channel))
+            {
+                channelMetadata.Remove(channel);
+            }
         }
 
         private async Task CalculateStreamSummaryStats(string channel)
@@ -290,7 +295,7 @@ namespace TwitchChatBot.CLI
                 {"channel", channel }
             };
 
-            Console.WriteLine($"{DateTime.UtcNow}: Saving data to Google sheet");
+            Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Saving data to Google sheet");
             var content = new FormUrlEncodedContent(data);
             try
             {
@@ -299,10 +304,10 @@ namespace TwitchChatBot.CLI
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"{DateTime.UtcNow}: Something went wrong", ex);
+                Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Something went wrong", ex);
                 throw;
             }
-            Console.WriteLine($"{DateTime.UtcNow}: Saved Data to Google sheet");
+            Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Saved Data to Google sheet");
   
         }
 
@@ -325,6 +330,7 @@ namespace TwitchChatBot.CLI
         private async Task Client_OnExisingUsersDetected(object sender, OnExistingUsersDetectedArgs e)
         {
             var date = DateTime.UtcNow;
+            Console.WriteLine($"{date.ToString(CultureInfo.InvariantCulture)}: Existing users detected in {e.Channel}: {string.Join(", ",e.Users)}");
             foreach(var user in e.Users)
             {
                 var entity = new ChannelActivityEntity

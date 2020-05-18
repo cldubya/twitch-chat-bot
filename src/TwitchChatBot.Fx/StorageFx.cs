@@ -105,7 +105,7 @@ namespace TwitchChatBot.Fx
 
         private async Task DispatchSignalRMessage(ChannelActivityEntity entity)
         {
-            var uri = new Uri($"{_configuration[Constants.CONFIG_SIGNALR_URL]}/{Constants.FX_SIGNALR_HUB_NAME}");
+            var uri = new Uri($"{_configuration[Constants.CONFIG_SIGNALR_URL]}/{Constants.CONFIG_BOT_SIGNALR_HUB_NAME}");
             var connection = new HubConnectionBuilder()
                 .WithUrl(uri)
                 .Build();

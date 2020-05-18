@@ -15,7 +15,7 @@ namespace TwitchChatBot.Fx
         [FunctionName("negotiate")]
         public SignalRConnectionInfo GetSignalRInfo(
            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
-           [SignalRConnectionInfo(HubName = Constants.FX_SIGNALR_HUB_NAME)] SignalRConnectionInfo connectionInfo)
+           [SignalRConnectionInfo(HubName = Constants.FX_CONFIG_SIGNALR_HUB_VALUE)] SignalRConnectionInfo connectionInfo)
         {
             return connectionInfo;
         }
@@ -23,7 +23,7 @@ namespace TwitchChatBot.Fx
         [FunctionName("messages")]
         public Task SendMessage(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post")] object message,
-            [SignalR(HubName = Constants.FX_SIGNALR_HUB_NAME)] IAsyncCollector<SignalRMessage> signalRMessages)
+            [SignalR(HubName = Constants.FX_CONFIG_SIGNALR_HUB_VALUE)] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             return signalRMessages.AddAsync(
                 new SignalRMessage

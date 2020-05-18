@@ -23,7 +23,6 @@ namespace TwitchChatBot.CLI
             // Start the bot
             var bot = new Bot(config);
             await bot.Initialize();
-            await bot.Stop("phil_nash");
 
             // Start the live stream service
             /*var svc = new StreamMonitorService(config, bot);
