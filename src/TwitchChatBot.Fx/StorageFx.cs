@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -78,19 +79,26 @@ namespace TwitchChatBot.Fx
         public async Task ProcessStreamQueueMessage([QueueTrigger(Constants.CONFIG_STREAM_QUEUE_NAME_VALUE, Connection = Constants.CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
         {
             var json = JObject.Parse(message);
-            var updates = json["data"].ToObject<List<TwitchWebhookStreamResponse>>();
-            foreach (var update in updates)
+            var entity = new ChannelActivityEntity();
+            if (json["data"].HasValues)
             {
-                var entity = new ChannelActivityEntity
+                var updates = json["data"].ToObject<List<TwitchWebhookStreamResponse>>();
+                foreach (var update in updates)
                 {
-                    Activity = StreamActivity.StreamStarted.ToString(),
-                    PartitionKey = update.UserName,
-                    RowKey = update.StartedAt.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
-                    Viewer = string.Empty
-                };
-
-                await _storageService.AddDataToStorage(entity);
+                    entity.Activity = StreamActivity.StreamStarted.ToString();
+                    entity.PartitionKey = update.UserName;
+                    entity.RowKey = update.StartedAt.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty);
+                    entity.Viewer = string.Empty;
+                }
             }
+            else
+            {
+                entity.Activity = StreamActivity.StreamStopped.ToString();
+                entity.PartitionKey = json["channel"].ToString();
+                entity.RowKey = DateTime.Parse(json["timestamp"].ToString()).ToString("s").Replace(":", string.Empty).Replace("-", string.Empty);
+                entity.Viewer = string.Empty;
+            }
+            await _storageService.AddDataToStorage(entity);
         }
     }
 }
