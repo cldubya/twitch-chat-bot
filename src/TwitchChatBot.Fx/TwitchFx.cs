@@ -27,7 +27,6 @@ namespace TwitchChatBot.Fx
             _httpClientFactory = httpClientFactory;
             _storageAccount = CloudStorageAccount.Parse(_configuration.GetConnectionString(Constants.CONFIG_CONNSTRING_STORAGE_NAME));
             _cloudQueueClient = _storageAccount.CreateCloudQueueClient();
-            _cloudQueue = _cloudQueueClient.GetQueueReference(Constants.CONFIG_QUEUE_NAME_VALUE);
         }
 
         [FunctionName("ConfirmTwitchFollowersSubscription")]
@@ -44,6 +43,7 @@ namespace TwitchChatBot.Fx
         {
             logger.LogInformation($"{DateTime.UtcNow}: Processing Twitch webhook for event on channel: {channel}");
             var messageText = await request.Content.ReadAsStringAsync();
+            _cloudQueue = _cloudQueueClient.GetQueueReference(Constants.CONFIG_FOLLOWERS_QUEUE_NAME_VALUE);
             var message = new CloudQueueMessage(messageText);
             await _cloudQueue.AddMessageAsync(message);
             return new NoContentResult();
@@ -62,6 +62,10 @@ namespace TwitchChatBot.Fx
         public async Task<IActionResult> HandleStreamWebhookEvent([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "subscription/streams/{channel}")] HttpRequestMessage request, string channel, ILogger logger)
         {
             logger.LogInformation($"{DateTime.UtcNow}: Processing Twitch webhook for event on channel: {channel}");
+            var messageText = await request.Content.ReadAsStringAsync();
+            _cloudQueue = _cloudQueueClient.GetQueueReference(Constants.CONFIG_STREAM_QUEUE_NAME_VALUE);
+            var message = new CloudQueueMessage(messageText);
+            await _cloudQueue.AddMessageAsync(message);
             return await Task.FromResult(new NoContentResult());
         }
 

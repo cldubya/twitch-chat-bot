@@ -41,7 +41,7 @@ namespace TwitchChatBot.CLI
             /* Common.CreateTableStorageAccount(_config.GetConnectionString("Storage"));
              _tableClient = await Common.CreateTableAsync();*/
 
-            _queueClient = await Common.CreateQueue(Constants.CONFIG_QUEUE_NAME_VALUE);
+            _queueClient = await Common.CreateQueue(Constants.CONFIG_FOLLOWERS_QUEUE_NAME_VALUE);
         }
 
         private async Task SetupTwitchClient()

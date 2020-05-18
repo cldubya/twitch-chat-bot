@@ -55,8 +55,8 @@ namespace TwitchChatBot.Fx
 
          }*/
 
-        [FunctionName("ProcessQueueEntry")]
-        public async Task ProcessQueueMessage([QueueTrigger(Constants.CONFIG_QUEUE_NAME_VALUE, Connection = Constants.CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
+        [FunctionName("ProcessFollowersQueueEntry")]
+        public async Task ProcessFollowersQueueMessage([QueueTrigger(Constants.CONFIG_FOLLOWERS_QUEUE_NAME_VALUE, Connection = Constants.CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
         {
             var json = JObject.Parse(message);
             var updates = json["data"].ToObject<List<TwitchWebhookFollowersResponse>>();
@@ -68,6 +68,25 @@ namespace TwitchChatBot.Fx
                     PartitionKey = update.ToName,
                     RowKey = update.FollowedAt.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
                     Viewer = update.FromName
+                };
+
+                await _storageService.AddDataToStorage(entity);
+            }
+        }
+
+        [FunctionName("ProcessStreamQueueEntry")]
+        public async Task ProcessStreamQueueMessage([QueueTrigger(Constants.CONFIG_STREAM_QUEUE_NAME_VALUE, Connection = Constants.CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
+        {
+            var json = JObject.Parse(message);
+            var updates = json["data"].ToObject<List<TwitchWebhookStreamResponse>>();
+            foreach (var update in updates)
+            {
+                var entity = new ChannelActivityEntity
+                {
+                    Activity = StreamActivity.StreamStarted.ToString(),
+                    PartitionKey = update.UserName,
+                    RowKey = update.StartedAt.ToString("s").Replace(":", string.Empty).Replace("-", string.Empty),
+                    Viewer = string.Empty
                 };
 
                 await _storageService.AddDataToStorage(entity);

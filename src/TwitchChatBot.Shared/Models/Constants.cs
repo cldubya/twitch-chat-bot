@@ -8,7 +8,8 @@
         public const string AZURE_BOTSETTINGS_TABLENAME = "Azure:BotSettings:TableName";
         public const string AZURE_BOTSETTINGS_PARTITIONKEY = "settings";
 
-        public const string CONFIG_QUEUE_NAME_VALUE = "stream-data";
+        public const string CONFIG_FOLLOWERS_QUEUE_NAME_VALUE = "followers-data";
+        public const string CONFIG_STREAM_QUEUE_NAME_VALUE = "stream-data";
         public const string CONFIG_TABLE_NAME_VALUE = "streaming";
         public const string CONFIG_CONNSTRING_STORAGE_NAME = "Storage";
 
