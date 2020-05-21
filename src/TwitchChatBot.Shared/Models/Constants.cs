@@ -16,7 +16,7 @@
         public const string CONFIG_BOT_CONNSTRINGS_SIGNALR = "SignalR";
         public const string CONFIG_BOT_SIGNALR_HUB_NAME = "Values:SignalR:HubName";
 
-        public const string CONFIG_SIGNALR_URL = "Values:SignalR:Url";
+        public const string CONFIG_SIGNALR_URL = "Values:SignalRUrl";
         public const string CONFIG_TWITCH_ACCESSTOKEN = "Values:Twitch:AccessToken";
         public const string CONFIG_TWITCH_BOTUSERNAME = "Values:Twitch:BotUsername";
         public const string CONFIG_TWITCH_BOTPASSWORD = "Values:Twitch:BotPassword";
@@ -30,11 +30,11 @@
         public const string FX_HTTPCLIENT_NAME = "zapier";
         public const string FX_TWITCH_WEBHOOKS_NAME = "twitchWebhooks";
         public const string FX_CONFIG_FOLLOWERS_QUEUE_NAME_VALUE = "followers-data";
-        public const string FX_CONFIG_STREAM_QUEUE_NAME_VALUE = "stream-data";
+        public const string FX_CONFIG_STREAM_QUEUE_NAME_VALUE = "streamdata";
         public const string FX_CONFIG_TABLE_NAME_VALUE = "streaming";
-        public const string FX_CONFIG_CONNSTRING_STORAGE_NAME = "Storage";
+        public const string FX_CONFIG_CONNSTRING_STORAGE_NAME = "FxStorage";
         public const string FX_CONFIG_SIGNALR_HUB_VALUE = "stream-bot";
-        //public const string CONFIG_FX_SIGNALR_HUB_NAME = "Values:SignalR:HubName";
+        public const string CONFIG_FX_SIGNALR_HUBNAME = "Values:SignalRHubName";
 
 
         public const int TWITCH_WEBHOOKS_LEASE_MAX = 864000;

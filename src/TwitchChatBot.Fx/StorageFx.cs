@@ -13,17 +13,22 @@ using TwitchChatBot.Shared.Models;
 
 namespace TwitchChatBot.Fx
 {
-    [StorageAccount("Storage")]
     public class StorageFx
     {
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IStorageService _storageService;
+        private readonly HubConnection _hubConnection;
         public StorageFx(IConfiguration configuration, IHttpClientFactory httpClientFactory, IStorageService storageService)
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
             _storageService = storageService;
+
+            var uri = new Uri($"{_configuration[Constants.CONFIG_SIGNALR_URL]}/{_configuration[Constants.CONFIG_FX_SIGNALR_HUBNAME]}");
+            _hubConnection = new HubConnectionBuilder()
+                .WithUrl(uri)
+                .Build();
         }
 
         /* [FunctionName("ProcessQueueEntry")]
@@ -58,7 +63,8 @@ namespace TwitchChatBot.Fx
          }*/
 
         [FunctionName("ProcessFollowersQueueEntry")]
-        public async Task ProcessFollowersQueueMessage([QueueTrigger(Constants.FX_CONFIG_FOLLOWERS_QUEUE_NAME_VALUE, Connection = Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
+        public async Task ProcessFollowersQueueMessage(
+            [QueueTrigger("followers-data")] string message, ILogger logger)
         {
             var json = JObject.Parse(message);
             var updates = json["data"].ToObject<List<TwitchWebhookFollowersResponse>>();
@@ -77,7 +83,8 @@ namespace TwitchChatBot.Fx
         }
 
         [FunctionName("ProcessStreamQueueEntry")]
-        public async Task ProcessStreamQueueMessage([QueueTrigger(Constants.FX_CONFIG_STREAM_QUEUE_NAME_VALUE, Connection = Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME)] string message, ILogger logger)
+        public async Task ProcessStreamQueueMessage(
+            [QueueTrigger(Constants.FX_CONFIG_STREAM_QUEUE_NAME_VALUE)] string message, ILogger logger)
         {
             var json = JObject.Parse(message);
             var entity = new ChannelActivityEntity();
@@ -105,19 +112,14 @@ namespace TwitchChatBot.Fx
 
         private async Task DispatchSignalRMessage(ChannelActivityEntity entity)
         {
-            var uri = new Uri($"{_configuration[Constants.CONFIG_SIGNALR_URL]}/{Constants.CONFIG_BOT_SIGNALR_HUB_NAME}");
-            var connection = new HubConnectionBuilder()
-                .WithUrl(uri)
-                .Build();
-
             try
             {
-                await connection.StartAsync();
-                await connection.InvokeAsync("StreamUpdate", entity);
+                await _hubConnection.StartAsync();
+                await _hubConnection.InvokeAsync("StreamUpdate", entity);
             }
             finally
             {
-                await connection.StopAsync();
+                await _hubConnection.StopAsync();
             }
         }
     }

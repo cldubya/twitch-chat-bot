@@ -151,7 +151,7 @@ namespace TwitchChatBot.Shared.Services
 
                 var request = new TwitchWebhookRequest
                 {
-                    Callback = $"https://corey.ngrok.io/api/subscription/followers/{channel}",
+                    Callback = $"https://corey_fx.ngrok.io/api/subscription/followers/{channel}",
                     Mode = isSubscribed ? "subscribe" : "unsubscribe",
                     Topic = $"https://api.twitch.tv/helix/users/follows?first=1&to_id={selected.Id}",
                     Lease = 864000
@@ -191,7 +191,7 @@ namespace TwitchChatBot.Shared.Services
 
                 var request = new TwitchWebhookRequest
                 {
-                    Callback = $"https://corey.ngrok.io/api/subscription/streams/{channel}",
+                    Callback = $"https://corey_fx.ngrok.io/api/subscription/streams/{channel}",
                     Mode = isSubscribed ? "subscribe" : "unsubscribe",
                     Topic = $"https://api.twitch.tv/helix/streams?user_id={selected.Id}",
                     Lease = 864000

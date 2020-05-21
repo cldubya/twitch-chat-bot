@@ -1,0 +1,2 @@
+﻿# APPSETTINGS Should not go to source control
+appsettings.json

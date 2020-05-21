@@ -1,23 +1,18 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using Azure.Storage.Queues;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Azure.Cosmos.Table;
-using Microsoft.Azure.Documents;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection.Metadata;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Enums;
 using TwitchChatBot.Shared.Models;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
-using TwitchLib.Client.Extensions;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
@@ -28,6 +23,7 @@ namespace TwitchChatBot.CLI
     {
         private TwitchClient _client;
         private CloudTable _tableClient;
+        private QueueClient _queueClient;
         private readonly IConfiguration _config;
         private HubConnection hubConnection;
         private Dictionary<string, DateTime> channelMetadata;
@@ -48,7 +44,9 @@ namespace TwitchChatBot.CLI
         private async Task SetupStorage()
         {
             Common.CreateTableStorageAccount(_config.GetConnectionString(Constants.CONFIG_BOT_CONNSTRINGS_STORAGE));
-            _tableClient = await Common.CreateTableAsync(Constants.CONFIG_BOT_STORAGE_TABLENAME);
+            _tableClient = await Common.CreateTableAsync(_config[Constants.CONFIG_BOT_STORAGE_TABLENAME]);
+            _queueClient = await Common.CreateQueue(Constants.FX_CONFIG_STREAM_QUEUE_NAME_VALUE);
+
         }
 
         private async Task SetupTwitchClient()
@@ -82,16 +80,15 @@ namespace TwitchChatBot.CLI
 
         private async Task SetupSignalRClient()
         {
-            var uri = new Uri($"{_config.GetConnectionString(Constants.CONFIG_BOT_CONNSTRINGS_SIGNALR)}/{_config[Constants.CONFIG_BOT_SIGNALR_HUB_NAME]}");
+            //var uri = new Uri($"{_config.GetConnectionString(Constants.CONFIG_BOT_CONNSTRINGS_SIGNALR)}");
             hubConnection = new HubConnectionBuilder()
-                .WithUrl(uri)
                 .WithAutomaticReconnect()
+                .WithUrl(new Uri("https://corey.ngrok.io/twitchhub"))
                 .Build();
 
             hubConnection.On<ChannelActivityEntity>("StreamUpdate", async entity =>
             {
                 var activity = (StreamActivity)Enum.Parse(typeof(StreamActivity), entity.Activity);
-
                 switch (activity)
                 {
                     case StreamActivity.StreamStarted:
@@ -104,13 +101,6 @@ namespace TwitchChatBot.CLI
                         break;
                 }
             });
-
-            hubConnection.Closed += async (error) =>
-            {
-                Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Closing SIGNALR Connection");
-                await Task.CompletedTask;
-            };
-
             await hubConnection.StartAsync();
         }
 
@@ -366,7 +356,7 @@ namespace TwitchChatBot.CLI
 
         private async Task AddEntityToStorage(ChannelActivityEntity entity)
         {
-            //await Common.AddMessageToQueue(_queueClient, entity);
+            await Common.AddMessageToQueue(_queueClient, entity);
             await Common.InsertOrMergeEntityAsync(_tableClient, entity);
         }
 

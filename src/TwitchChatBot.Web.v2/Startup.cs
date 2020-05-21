@@ -16,6 +16,7 @@ using TwitchChatBot.Shared.Models;
 using TwitchChatBot.Shared.Services;
 using TwitchChatBot.Web.v2.Areas.Identity;
 using TwitchChatBot.Web.v2.Data;
+using TwitchChatBot.Web.v2.Hubs;
 
 namespace TwitchChatBot.Web.v2
 {
@@ -47,7 +48,7 @@ namespace TwitchChatBot.Web.v2
             services.AddSingleton<ITwitchService, TwitchService>();
             services.AddSingleton<IStorageService, AzureTableStorageService>();
 
-            services.AddControllers();
+            services.AddSignalR();
                 /*impl => 
             {
                 var httpClientFactory = (IHttpClientFactory)impl.GetService(typeof(IHttpClientFactory));
@@ -139,6 +140,7 @@ namespace TwitchChatBot.Web.v2
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHub<TwitchHub>("/twitchhub");
                 endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");

@@ -1,0 +1,17 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "ZapierUrl": "<REPLACE_ZAPIER_URL_HERE>",
+    "QueueName": "<REPLACE_QUEUE_NAME_HERE>",
+    "TableName": "<REPLACE_TABLE_NAME_HERE>",
+    "SignalRUrl": "<REPLACE_SIGNALR_URL_HERE>",
+    "SignalRHubName":  "twitchhub",
+    "FxStorage": "<REPLACE_FX_STORAGE_URL_HERE>"
+  },
+  "Host": {
+    "CORS": "*", 
+    "CORSCredentials":  false
+  }
+}

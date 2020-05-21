@@ -28,7 +28,7 @@ namespace TwitchChatBot.Fx
         {
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
-            _storageAccount = CloudStorageAccount.Parse(_configuration.GetConnectionString(Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME));
+            _storageAccount = CloudStorageAccount.Parse(_configuration[Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME]);
             _cloudQueueClient = _storageAccount.CreateCloudQueueClient();
         }
 
@@ -63,7 +63,7 @@ namespace TwitchChatBot.Fx
 
         [FunctionName("ProcessTwitchStreamWebhook")]
         public async Task<IActionResult> HandleStreamWebhookEvent([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "subscription/streams/{channel}")] HttpRequestMessage request, string channel, ILogger logger)
-        {
+         {
             logger.LogInformation($"{DateTime.UtcNow}: Processing Twitch webhook for event on channel: {channel}");
             var messageText = await request.Content.ReadAsStringAsync();
 

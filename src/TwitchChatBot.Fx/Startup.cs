@@ -1,5 +1,7 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 using TwitchChatBot.Shared.Interfaces;
 using TwitchChatBot.Shared.Models;
 using TwitchChatBot.Shared.Services;
@@ -26,6 +28,19 @@ namespace TwitchChatBot.Fx
                 });
 
             builder.Services.AddSingleton<IStorageService, AzureTableStorageService>();
+
+            var localRoot = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");
+            var azureRoot = $"{Environment.GetEnvironmentVariable("HOME")}/site/wwwroot";
+
+            var actualRoot = localRoot ?? azureRoot;
+
+            var configBuilder = new ConfigurationBuilder()
+                .SetBasePath(actualRoot)
+                .AddEnvironmentVariables()
+                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true);
+            IConfiguration configuration = configBuilder.Build();
+            builder.Services.AddSingleton(configuration);
+
         }
     }
 }
