@@ -24,12 +24,13 @@ steps:
   displayName: 'dotnet build Fx project'
   inputs:
     command: build
+    arguments: '-o $(Build.ArtifactStagingDirectory)/Fx'
     publishWebProjects: false
     projects: '**/TwitchChatBot.Fx.csproj'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/Fx'
     ArtifactName: 'drop_fx'
     publishLocation: Container
 
@@ -37,11 +38,12 @@ steps:
   displayName: 'dotnet build Web project'
   inputs:
     command: build
+    arguments: '-o $(Build.ArtifactStagingDirectory)/Web'
     publishWebProjects: true
     projects: '**/TwitchChatBot.Web.v2.csproj'
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/Web'
     ArtifactName: 'drop_web'
     publishLocation: Container
