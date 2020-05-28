@@ -21,13 +21,6 @@ steps:
     version: '3.1.x'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet build Fx project'
-  inputs:
-    command: 'build'
-    projects: '**/TwitchChatBot.Fx.csproj'
-    arguments: '--outputDir Fx --configuration $(buildConfiguration)'
-
-- task: DotNetCoreCLI@2
   displayName: 'dotnet publish Fx project'
   inputs:
     command: publish
@@ -38,17 +31,10 @@ steps:
     modifyOutputPath: true
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet build Web project'
-  inputs:
-    command: 'build'
-    projects: '**/TwitchChatBot.Web.v2.csproj'
-    arguments: '--outputDir Fx --configuration $(buildConfiguration)'
-
-- task: DotNetCoreCLI@2
   displayName: 'dotnet publish Web project'
   inputs:
     command: publish
-    publishWebProjects: false
+    publishWebProjects: true
     projects: '**/TwitchChatBot.Web.v2.csproj'
     arguments: '-o Web'
     zipAfterPublish: true
