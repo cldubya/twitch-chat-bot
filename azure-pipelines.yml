@@ -15,20 +15,41 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
+- task: UseDotNet@2
   inputs:
-    restoreSolution: '$(solution)'
+    packageType: 'sdk'
+    version: '3.1.x'
 
-- task: VSBuild@1
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build Fx project'
   inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: 'build'
+    projects: '**/TwitchChatBot.Fx.csproj'
+    arguments: '--outputDir Fx --configuration $(buildConfiguration)'
 
-- task: VSTest@2
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish Fx project'
   inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    command: publish
+    publishWebProjects: false
+    projects: '**/TwitchChatBot.Fx.csproj'
+    arguments: '-o Fx'
+    zipAfterPublish: true
+    modifyOutputPath: true
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build Web project'
+  inputs:
+    command: 'build'
+    projects: '**/TwitchChatBot.Web.v2.csproj'
+    arguments: '--outputDir Fx --configuration $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet publish Web project'
+  inputs:
+    command: publish
+    publishWebProjects: false
+    projects: '**/TwitchChatBot.Web.v2.csproj'
+    arguments: '-o Web'
+    zipAfterPublish: true
+    modifyOutputPath: true
