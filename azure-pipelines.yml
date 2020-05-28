@@ -26,9 +26,12 @@ steps:
     command: publish
     publishWebProjects: false
     projects: '**/TwitchChatBot.Fx.csproj'
-    arguments: '-o Fx'
-    zipAfterPublish: true
-    modifyOutputPath: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop_fx'
+    publishLocation: Container
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet publish Web project'
@@ -36,6 +39,9 @@ steps:
     command: publish
     publishWebProjects: true
     projects: '**/TwitchChatBot.Web.v2.csproj'
-    arguments: '-o Web'
-    zipAfterPublish: true
-    modifyOutputPath: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop_web'
+    publishLocation: Container
