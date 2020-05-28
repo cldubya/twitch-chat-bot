@@ -62,6 +62,7 @@ namespace TwitchChatBot.Shared.Services
 
                 var insertOperation = TableOperation.InsertOrMerge(entity);
                 var table = _tableClient.GetTableReference(Constants.FX_CONFIG_TABLE_NAME_VALUE);
+                await table.CreateIfNotExistsAsync();
                 var result = await table.ExecuteAsync(insertOperation);
             }
             catch (StorageException ex)

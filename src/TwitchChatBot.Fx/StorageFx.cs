@@ -27,6 +27,7 @@ namespace TwitchChatBot.Fx
 
             var uri = new Uri($"{_configuration[Constants.CONFIG_SIGNALR_URL]}/{_configuration[Constants.CONFIG_FX_SIGNALR_HUBNAME]}");
             _hubConnection = new HubConnectionBuilder()
+                .WithAutomaticReconnect()
                 .WithUrl(uri)
                 .Build();
         }

@@ -80,10 +80,10 @@ namespace TwitchChatBot.CLI
 
         private async Task SetupSignalRClient()
         {
-            //var uri = new Uri($"{_config.GetConnectionString(Constants.CONFIG_BOT_CONNSTRINGS_SIGNALR)}");
+            var uri = new Uri($"{_config.GetConnectionString(Constants.CONFIG_BOT_CONNSTRINGS_SIGNALR)}");
             hubConnection = new HubConnectionBuilder()
                 .WithAutomaticReconnect()
-                .WithUrl(new Uri("https://corey.ngrok.io/twitchhub"))
+                .WithUrl(uri)
                 .Build();
 
             hubConnection.On<ChannelActivityEntity>("StreamUpdate", async entity =>
@@ -102,6 +102,7 @@ namespace TwitchChatBot.CLI
                 }
             });
             await hubConnection.StartAsync();
+            Console.WriteLine($"{DateTime.UtcNow}: Connected to SignalR hub {uri.ToString()} - {hubConnection.ConnectionId}");
         }
 
         public async Task Start(string channel)
