@@ -21,9 +21,9 @@ steps:
     version: '3.1.x'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet publish Fx project'
+  displayName: 'dotnet build Fx project'
   inputs:
-    command: publish
+    command: build
     publishWebProjects: false
     projects: '**/TwitchChatBot.Fx.csproj'
 
@@ -34,9 +34,9 @@ steps:
     publishLocation: Container
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet publish Web project'
+  displayName: 'dotnet build Web project'
   inputs:
-    command: publish
+    command: build
     publishWebProjects: true
     projects: '**/TwitchChatBot.Web.v2.csproj'
 
