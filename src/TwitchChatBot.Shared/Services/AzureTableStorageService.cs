@@ -12,7 +12,7 @@ namespace TwitchChatBot.Shared.Services
     public class AzureTableStorageService : IStorageService
     {
         private CloudTableClient _tableClient;
-        private readonly string _connectionString;
+        private string _connectionString;
         private readonly IConfiguration _configuration;
         private readonly ILogger<IStorageService> _logger;
 
@@ -25,6 +25,17 @@ namespace TwitchChatBot.Shared.Services
             {
                 _connectionString = _configuration.GetConnectionString(Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME);
             }
+        }
+
+        public async Task SetConnectionString(string connectionString)
+        {
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                await Task.FromException(new ArgumentException("The connectionString specified was empty or null", nameof(connectionString)));
+            }
+            _logger.LogInformation($"{DateTime.UtcNow}: Setting the connectionString to {connectionString}");
+            _connectionString = connectionString;
+            _logger.LogInformation($"{DateTime.UtcNow}: Completed setting the connectionString to {connectionString}");
         }
 
         public async Task LoadBotSettings()
@@ -57,7 +68,7 @@ namespace TwitchChatBot.Shared.Services
             {
                 if (_tableClient == null)
                 {
-                    CreateTableClient(_connectionString);
+                    CreateTableClient(_connectionString ?? _configuration[Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME]);
                 }
 
                 var insertOperation = TableOperation.InsertOrMerge(entity);

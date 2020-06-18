@@ -7,6 +7,7 @@ namespace TwitchChatBot.Shared.Interfaces
     {
         Task LoadBotSettings();
         Task SaveBotSettings();
+        Task SetConnectionString(string connectionString);
 
         Task AddDataToStorage(ChannelActivityEntity entity);
     }

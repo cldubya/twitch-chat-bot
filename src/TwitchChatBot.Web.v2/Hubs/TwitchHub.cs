@@ -9,7 +9,7 @@ namespace TwitchChatBot.Web.v2.Hubs
 {
     public class TwitchHub : Hub
     {
-        public async Task SendUpdate(ChannelActivityEntity entity)
+        public async Task StreamUpdate(ChannelActivityEntity entity)
         {
             await Clients.All.SendAsync("StreamUpdate", entity);
         }

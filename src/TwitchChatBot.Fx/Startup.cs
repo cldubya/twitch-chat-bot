@@ -27,6 +27,7 @@ namespace TwitchChatBot.Fx
                     opts.BaseAddress = new System.Uri("https://api.twitch.tv/");
                 });
 
+
             builder.Services.AddSingleton<IStorageService, AzureTableStorageService>();
 
             var localRoot = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot");

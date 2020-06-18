@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Enums;
 using TwitchChatBot.Shared.Interfaces;
@@ -16,16 +15,20 @@ namespace TwitchChatBot.Fx
     public class StorageFx
     {
         private readonly IConfiguration _configuration;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IStorageService _storageService;
         private readonly HubConnection _hubConnection;
-        public StorageFx(IConfiguration configuration, IHttpClientFactory httpClientFactory, IStorageService storageService)
+        public StorageFx(IConfiguration configuration, IStorageService storageService)
         {
             _configuration = configuration;
-            _httpClientFactory = httpClientFactory;
             _storageService = storageService;
 
-            var uri = new Uri($"{_configuration[Constants.CONFIG_SIGNALR_URL]}/{_configuration[Constants.CONFIG_FX_SIGNALR_HUBNAME]}");
+            var connectionString = _configuration[Constants.FX_CONFIG_CONNSTRING_STORAGE_NAME];
+            _storageService.SetConnectionString(connectionString);
+
+            var signalRUri = "https://twitchchatbotwebv220200523131946.azurewebsites.net/";
+            var signalRHub = "twitchhub";
+
+            var uri = new Uri($"{signalRUri}/{signalRHub}");
             _hubConnection = new HubConnectionBuilder()
                 .WithAutomaticReconnect()
                 .WithUrl(uri)

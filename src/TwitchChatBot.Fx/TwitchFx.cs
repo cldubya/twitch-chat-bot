@@ -13,7 +13,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using TwitchChatBot.Shared.Models;
-using TwitchLib.Api.Core.Models.Undocumented.Comments;
 
 namespace TwitchChatBot.Fx
 {
@@ -46,6 +45,12 @@ namespace TwitchChatBot.Fx
         {
             logger.LogInformation($"{DateTime.UtcNow}: Processing Twitch webhook for event on channel: {channel}");
             var messageText = await request.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(messageText))
+            {
+                logger.LogError($"{DateTime.UtcNow}: The message body is empty");
+                return new NoContentResult();
+            }
+
             _cloudQueue = _cloudQueueClient.GetQueueReference(Constants.FX_CONFIG_FOLLOWERS_QUEUE_NAME_VALUE);
             var message = new CloudQueueMessage(messageText);
             await _cloudQueue.AddMessageAsync(message);
@@ -66,7 +71,11 @@ namespace TwitchChatBot.Fx
          {
             logger.LogInformation($"{DateTime.UtcNow}: Processing Twitch webhook for event on channel: {channel}");
             var messageText = await request.Content.ReadAsStringAsync();
-
+            if (string.IsNullOrEmpty(messageText))
+            {
+                logger.LogError($"{DateTime.UtcNow}: The message body is empty");
+                return new NoContentResult();
+            }
             // Check if the json["data"] has values. If not add to the json children the current channel and the timestamp
             var json = JObject.Parse(messageText);
 

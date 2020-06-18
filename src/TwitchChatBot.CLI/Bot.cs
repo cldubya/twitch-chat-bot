@@ -15,6 +15,7 @@ using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
+using TwitchLib.Communication.Events;
 using TwitchLib.Communication.Models;
 
 namespace TwitchChatBot.CLI
@@ -67,6 +68,8 @@ namespace TwitchChatBot.CLI
             _client.OnLog += Client_OnLog;
             _client.OnJoinedChannel += Client_OnJoinedChannel;
             _client.OnConnected += Client_OnConnected;
+            _client.OnDisconnected += Client_OnDisconnected;
+            _client.OnLeftChannel += Client_OnLeftChannel;
             _client.OnMessageReceived += async (s, e) => await Client_OnMessageReceived(s, e);
             _client.OnNewSubscriber += async (s, e) => await Client_OnNewSubscriber(s, e);
             _client.OnUserJoined += async (s, e) => await Client_OnUserJoined(s, e);
@@ -77,6 +80,10 @@ namespace TwitchChatBot.CLI
 
             await Task.CompletedTask;
         }
+
+        private void Client_OnLeftChannel(object sender, OnLeftChannelArgs e) => Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Completed leaving the channel {e.Channel}");
+
+        private void Client_OnDisconnected(object sender, OnDisconnectedEventArgs e) => Console.WriteLine($"{DateTime.UtcNow.ToString(CultureInfo.InvariantCulture)}: Disconnected from Twitch");
 
         private async Task SetupSignalRClient()
         {
@@ -357,7 +364,7 @@ namespace TwitchChatBot.CLI
 
         private async Task AddEntityToStorage(ChannelActivityEntity entity)
         {
-            await Common.AddMessageToQueue(_queueClient, entity);
+            //await Common.AddMessageToQueue(_queueClient, entity);
             await Common.InsertOrMergeEntityAsync(_tableClient, entity);
         }
 
