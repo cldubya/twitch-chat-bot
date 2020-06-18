@@ -317,7 +317,7 @@ namespace TwitchChatBot.CLI
             builder = builder.Insert(13, ":");
             builder = builder.Insert(16, ":");
 
-            if (builder.Length > 19)
+            if (builder.Length > 19 && builder[19] != '.')
             {
                 builder = builder.Insert(19, ".");
             }

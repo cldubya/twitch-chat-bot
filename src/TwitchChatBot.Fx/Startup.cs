@@ -17,14 +17,14 @@ namespace TwitchChatBot.Fx
                 opts =>
                 {
                     opts.DefaultRequestHeaders.Clear();
-                    opts.BaseAddress = new System.Uri("https://hooks.zapier.com");
+                    opts.BaseAddress = new Uri("https://hooks.zapier.com");
                 });
 
             builder.Services.AddHttpClient(Constants.FX_TWITCH_WEBHOOKS_NAME,
                 opts =>
                 {
                     opts.DefaultRequestHeaders.Clear();
-                    opts.BaseAddress = new System.Uri("https://api.twitch.tv/");
+                    opts.BaseAddress = new Uri("https://api.twitch.tv/");
                 });
 
 
